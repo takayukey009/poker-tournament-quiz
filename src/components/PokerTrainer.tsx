@@ -9,6 +9,7 @@ import StatsDashboard from './StatsDashboard';
 import AuthForm from './AuthForm';
 import UserProfile from './UserProfile';
 import { getCurrentUser, getUserProgress, saveUserProgress } from '../supabase/authService';
+import type { User } from '@supabase/supabase-js';
 
 const PokerTrainer = () => {
   const [currentDay, setCurrentDay] = useState(1);
@@ -19,7 +20,7 @@ const PokerTrainer = () => {
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'quiz' | 'calendar' | 'stats'>('quiz');
-  const [user, setUser] = useState<Record<string, unknown> | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [showAuthForm, setShowAuthForm] = useState(false);
 
   // テーマの色

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { signOut } from '../supabase/authService';
+import type { User } from '@supabase/supabase-js';
 
 interface UserProfileProps {
-  user: Record<string, unknown>;
+  user: User;
   onSignOut: () => void;
   colors: {
     bg: string;
