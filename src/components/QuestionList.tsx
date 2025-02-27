@@ -19,7 +19,7 @@ const QuestionList: React.FC<QuestionListProps> = ({
   });
 
   const getCategoryLabel = (category: string) => {
-    const labels = {
+    const labels: Record<string, string> = {
       preflop: 'プリフロップ',
       flop: 'フロップ',
       turn: 'ターン',
@@ -30,7 +30,7 @@ const QuestionList: React.FC<QuestionListProps> = ({
   };
 
   const getDifficultyLabel = (difficulty: string) => {
-    const labels = {
+    const labels: Record<string, string> = {
       beginner: '初級',
       intermediate: '中級',
       advanced: '上級'
