@@ -87,7 +87,7 @@ export const getUserProfile = async (userId: string) => {
 };
 
 // ユーザープロファイルの作成/更新
-export const upsertUserProfile = async (userId: string, profileData: any) => {
+export const upsertUserProfile = async (userId: string, profileData: Record<string, unknown>) => {
   try {
     const { data, error } = await supabase
       .from('user_profiles')

@@ -19,7 +19,7 @@ const PokerTrainer = () => {
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'quiz' | 'calendar' | 'stats'>('quiz');
-  const [user, setUser] = useState<Record<string, any> | null>(null);
+  const [user, setUser] = useState<Record<string, unknown> | null>(null);
   const [showAuthForm, setShowAuthForm] = useState(false);
 
   // テーマの色
