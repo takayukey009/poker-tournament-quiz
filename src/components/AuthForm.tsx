@@ -42,21 +42,22 @@ const AuthForm: React.FC<AuthFormProps> = ({ onSuccess, colors }) => {
     try {
       if (isLogin) {
         // ログイン処理
-        const { data, error } = await signIn(email, password);
+        const { error } = await signIn(email, password);
         if (error) throw error;
         
         setMessage('ログインに成功しました');
         onSuccess();
       } else {
         // 新規登録処理
-        const { data, error } = await signUp(email, password);
+        const { error } = await signUp(email, password);
         if (error) throw error;
         
         setMessage('登録に成功しました。メールを確認してください。');
         setIsLogin(true);
       }
-    } catch (err: any) {
-      setError(err.message || 'エラーが発生しました');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'エラーが発生しました';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

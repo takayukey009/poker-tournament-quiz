@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { signOut } from '../supabase/authService';
 
 interface UserProfileProps {
-  user: any;
+  user: Record<string, any>;
   onSignOut: () => void;
   colors: {
     bg: string;

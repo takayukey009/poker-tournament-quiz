@@ -19,7 +19,7 @@ const PokerTrainer = () => {
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'quiz' | 'calendar' | 'stats'>('quiz');
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<Record<string, any> | null>(null);
   const [showAuthForm, setShowAuthForm] = useState(false);
 
   // テーマの色
@@ -78,7 +78,7 @@ const PokerTrainer = () => {
             setProgress(JSON.parse(savedProgress));
           }
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error loading data:', err);
         setError('データの読み込み中にエラーが発生しました。');
       } finally {
