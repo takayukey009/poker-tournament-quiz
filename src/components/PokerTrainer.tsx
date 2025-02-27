@@ -26,29 +26,29 @@ const PokerTrainer = () => {
   // テーマの色
   const colors = theme === 'dark' 
     ? {
-        bg: 'bg-gray-900',
+        bg: 'bg-background',
         card: 'bg-gray-800',
-        text: 'text-white',
+        text: 'text-foreground',
         subtext: 'text-gray-300',
-        button: 'bg-blue-600 hover:bg-blue-700',
+        button: 'bg-primary hover:bg-primary-hover',
         cardBorder: 'border-gray-700',
         header: 'bg-gray-800',
-        accent: 'text-blue-400',
+        accent: 'text-accent',
         categoryBg: 'bg-blue-900',
-        progressBar: 'bg-blue-600',
+        progressBar: 'bg-primary',
         progressBg: 'bg-gray-700'
       }
     : {
-        bg: 'bg-gray-100',
+        bg: 'bg-background',
         card: 'bg-white',
-        text: 'text-gray-900',
+        text: 'text-foreground',
         subtext: 'text-gray-600',
-        button: 'bg-blue-500 hover:bg-blue-600',
+        button: 'bg-primary hover:bg-primary-hover',
         cardBorder: 'border-gray-200',
         header: 'bg-white',
-        accent: 'text-blue-600',
+        accent: 'text-accent',
         categoryBg: 'bg-blue-100',
-        progressBar: 'bg-blue-500',
+        progressBar: 'bg-primary',
         progressBg: 'bg-gray-200'
       };
 
@@ -259,19 +259,24 @@ const PokerTrainer = () => {
     <div className={`flex flex-col min-h-screen ${colors.bg}`}>
       {/* ヘッダー */}
       <motion.header 
-        className={`flex justify-between items-center p-4 ${colors.header} shadow-md`}
+        className={`sticky top-0 z-10 flex justify-between items-center p-4 ${colors.header} shadow-md`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <h1 className={`text-xl font-bold ${colors.text}`}>テキサスホールデム問題集</h1>
-        <div className="flex items-center space-x-2">
-          <div className={`text-sm ${colors.subtext}`}>
-            進捗: {calculateProgress()}%
+        <div className="flex items-center space-x-3">
+          <div className={`hidden sm:flex text-sm ${colors.subtext} items-center`}>
+            <div className="w-20 mr-2">進捗:</div>
+            <div className="w-24 bg-gray-700 rounded-full h-2.5">
+              <div className="bg-primary h-2.5 rounded-full" style={{ width: `${calculateProgress()}%` }}></div>
+            </div>
+            <span className="ml-2">{calculateProgress()}%</span>
           </div>
           <button 
             onClick={toggleTheme} 
             className={`p-2 rounded-full hover:bg-opacity-20 hover:bg-gray-500 ${colors.text} transition-colors`}
+            aria-label={theme === 'dark' ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
           >
             {theme === 'dark' ? '☀️' : '🌙'}
           </button>
@@ -284,7 +289,7 @@ const PokerTrainer = () => {
           ) : (
             <motion.button
               onClick={() => setShowAuthForm(true)}
-              className={`ml-2 px-3 py-1 text-sm rounded-md ${colors.button} ${colors.text}`}
+              className={`ml-2 px-4 py-2 text-sm rounded-md ${colors.button} ${colors.text} shadow-sm`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -294,22 +299,25 @@ const PokerTrainer = () => {
         </div>
       </motion.header>
 
-      {/* 進捗バー */}
-      <div className={`w-full h-1 ${colors.progressBg}`}>
-        <div 
-          className={`h-full ${colors.progressBar} transition-all duration-500 ease-in-out`} 
-          style={{ width: `${calculateProgress()}%` }}
-        ></div>
+      {/* 進捗バー (モバイル用) */}
+      <div className="sm:hidden">
+        <div className={`flex items-center px-4 py-2 ${colors.subtext}`}>
+          <div className="w-16 mr-2">進捗:</div>
+          <div className="flex-1 bg-gray-700 rounded-full h-2.5">
+            <div className="bg-primary h-2.5 rounded-full" style={{ width: `${calculateProgress()}%` }}></div>
+          </div>
+          <span className="ml-2 w-12 text-right">{calculateProgress()}%</span>
+        </div>
       </div>
 
       {/* タブナビゲーション */}
-      <div className={`flex justify-center p-2 ${colors.header} border-b ${colors.cardBorder}`}>
-        <nav className="flex flex-wrap justify-center space-x-1">
+      <div className={`flex justify-center p-2 ${colors.header} border-b ${colors.cardBorder} sticky top-[73px] z-10`}>
+        <nav className="flex flex-wrap justify-center space-x-2">
           <button
             onClick={() => setActiveTab('quiz')}
-            className={`px-4 py-2 rounded-t-lg transition-colors ${
+            className={`px-4 py-2 rounded-md transition-colors ${
               activeTab === 'quiz' 
-                ? `${colors.button} ${colors.text}` 
+                ? `${colors.button} ${colors.text} shadow-sm` 
                 : `${colors.text} hover:bg-gray-700 hover:bg-opacity-30`
             }`}
           >
@@ -317,9 +325,9 @@ const PokerTrainer = () => {
           </button>
           <button
             onClick={() => setActiveTab('calendar')}
-            className={`px-4 py-2 rounded-t-lg transition-colors ${
+            className={`px-4 py-2 rounded-md transition-colors ${
               activeTab === 'calendar' 
-                ? `${colors.button} ${colors.text}` 
+                ? `${colors.button} ${colors.text} shadow-sm` 
                 : `${colors.text} hover:bg-gray-700 hover:bg-opacity-30`
             }`}
           >
@@ -327,9 +335,9 @@ const PokerTrainer = () => {
           </button>
           <button
             onClick={() => setActiveTab('stats')}
-            className={`px-4 py-2 rounded-t-lg transition-colors ${
+            className={`px-4 py-2 rounded-md transition-colors ${
               activeTab === 'stats' 
-                ? `${colors.button} ${colors.text}` 
+                ? `${colors.button} ${colors.text} shadow-sm` 
                 : `${colors.text} hover:bg-gray-700 hover:bg-opacity-30`
             }`}
           >
@@ -339,33 +347,38 @@ const PokerTrainer = () => {
       </div>
 
       {/* メインコンテンツ */}
-      <main className="flex-1 p-2 sm:p-4 md:p-6 max-w-4xl mx-auto w-full overflow-x-hidden">
+      <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-4xl mx-auto w-full overflow-x-hidden">
         {error && (
-          <div className="mb-4 p-3 bg-red-500 bg-opacity-20 text-red-700 rounded-md">
-            {error}
+          <div className="mb-6 p-4 bg-red-500 bg-opacity-20 text-red-700 rounded-md border border-red-300">
+            <div className="flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              {error}
+            </div>
           </div>
         )}
         
         {activeTab === 'quiz' && (
           <motion.div 
-            className={`mb-4 p-4 md:p-6 ${colors.card} rounded-lg shadow-md border ${colors.cardBorder}`}
+            className={`mb-6 p-5 sm:p-6 md:p-8 ${colors.card} rounded-lg shadow-card hover:shadow-card-hover border ${colors.cardBorder} transition-shadow`}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-3">
               <div className="flex items-center">
-                <span className={`inline-flex items-center justify-center h-8 w-8 rounded-full ${colors.button} ${colors.text} mr-2 font-bold`}>
+                <span className={`inline-flex items-center justify-center h-10 w-10 rounded-full ${colors.button} ${colors.text} mr-3 font-bold text-lg`}>
                   {currentDay}
                 </span>
                 <h2 className={`text-lg font-bold ${colors.text}`}>Day {selectedDay.day}</h2>
               </div>
-              <span className={`px-3 py-1 text-sm font-medium rounded-full ${categoryStyle.bg} ${categoryStyle.text}`}>
+              <span className={`px-4 py-1.5 text-sm font-medium rounded-full ${categoryStyle.bg} ${categoryStyle.text} self-start sm:self-auto`}>
                 {categoryStyle.label}
               </span>
             </div>
-            <h3 className={`text-xl font-bold mb-3 ${colors.accent}`}>{selectedDay.title}</h3>
-            <div className={`mb-4 whitespace-pre-line ${colors.text}`}>
+            <h3 className={`text-xl sm:text-2xl font-bold mb-4 ${colors.accent}`}>{selectedDay.title}</h3>
+            <div className={`mb-6 whitespace-pre-line ${colors.text} leading-relaxed text-base sm:text-lg`}>
               {selectedDay.question}
             </div>
             <motion.button
@@ -375,7 +388,7 @@ const PokerTrainer = () => {
                   saveProgress(selectedDay.day, true);
                 }
               }}
-              className={`w-full py-3 mb-4 rounded-md font-bold ${colors.button} ${colors.text} transition-colors`}
+              className={`w-full py-4 mb-6 rounded-md font-bold text-lg ${colors.button} ${colors.text} transition-colors shadow-sm`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -384,7 +397,7 @@ const PokerTrainer = () => {
             
             {showAnswer && (
               <motion.div 
-                className={`p-4 rounded-md bg-opacity-10 bg-blue-500 ${colors.subtext} whitespace-pre-line`}
+                className={`p-5 rounded-md bg-opacity-10 bg-blue-500 ${colors.subtext} whitespace-pre-line leading-relaxed text-base`}
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 transition={{ duration: 0.3 }}
@@ -417,24 +430,30 @@ const PokerTrainer = () => {
         
         {/* ナビゲーションボタン */}
         {activeTab === 'quiz' && (
-          <div className="flex justify-between">
+          <div className="flex justify-between mt-6">
             <motion.button
               onClick={goToPreviousDay}
               disabled={currentDay <= 1}
-              className={`flex items-center p-2 rounded-md ${currentDay <= 1 ? 'opacity-50 cursor-not-allowed' : ''} ${colors.text} transition-colors`}
+              className={`flex items-center px-4 py-3 rounded-md ${currentDay <= 1 ? 'opacity-50 cursor-not-allowed' : ''} ${colors.text} hover:bg-gray-700 hover:bg-opacity-10 transition-colors`}
               whileHover={currentDay > 1 ? { scale: 1.05 } : {}}
               whileTap={currentDay > 1 ? { scale: 0.95 } : {}}
             >
-              ← 前の問題
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              前の問題
             </motion.button>
             <motion.button
               onClick={goToNextDay}
               disabled={currentDay >= questions.length}
-              className={`flex items-center p-2 rounded-md ${currentDay >= questions.length ? 'opacity-50 cursor-not-allowed' : ''} ${colors.text} transition-colors`}
+              className={`flex items-center px-4 py-3 rounded-md ${currentDay >= questions.length ? 'opacity-50 cursor-not-allowed' : ''} ${colors.text} hover:bg-gray-700 hover:bg-opacity-10 transition-colors`}
               whileHover={currentDay < questions.length ? { scale: 1.05 } : {}}
               whileTap={currentDay < questions.length ? { scale: 0.95 } : {}}
             >
-              次の問題 →
+              次の問題
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
             </motion.button>
           </div>
         )}
@@ -443,7 +462,7 @@ const PokerTrainer = () => {
       {/* 認証フォームモーダル */}
       {showAuthForm && (
         <motion.div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -462,8 +481,11 @@ const PokerTrainer = () => {
       )}
       
       {/* フッター */}
-      <footer className={`p-4 text-center ${colors.subtext} text-sm`}>
-        テキサスホールデムトーナメント問題集 2025
+      <footer className={`p-6 text-center ${colors.subtext} text-sm border-t ${colors.cardBorder}`}>
+        <div className="max-w-4xl mx-auto">
+          <p className="mb-2">テキサスホールデムトーナメント問題集 2025</p>
+          <p className="text-xs">毎日のポーカートーナメント戦略学習プラットフォーム</p>
+        </div>
       </footer>
     </div>
   );

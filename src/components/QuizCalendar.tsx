@@ -51,7 +51,7 @@ const QuizCalendar: React.FC<QuizCalendarProps> = ({
     }
 
     return (
-      <div className="grid gap-4">
+      <div className="grid gap-2 sm:gap-4">
         {rows.map((row, rowIndex) => (
           <div key={`row-${rowIndex}`} className="grid grid-cols-7 gap-1 sm:gap-2">
             {row.map(day => {
@@ -65,24 +65,26 @@ const QuizCalendar: React.FC<QuizCalendarProps> = ({
                 <motion.div
                   key={`day-${day}`}
                   className={`
-                    p-1 sm:p-3 rounded-lg cursor-pointer relative
-                    ${isCurrentDay ? 'ring-2 ring-offset-1 ring-blue-500' : ''}
+                    p-1 sm:p-2 md:p-3 rounded-lg cursor-pointer relative
+                    ${isCurrentDay ? 'ring-2 ring-offset-1 ring-blue-500 dark:ring-blue-400' : ''}
                     ${isCompleted ? categoryStyle.bg : `${colors.card} opacity-70`}
-                    hover:opacity-100 transition-all
+                    hover:opacity-100 transition-all duration-200
+                    flex flex-col items-center justify-center aspect-square
                   `}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => onDaySelect(day)}
+                  aria-label={`Day ${day}, Category: ${category}, ${isCompleted ? 'Completed' : 'Not completed'}`}
                 >
-                  <div className="flex flex-col items-center">
-                    <span className={`text-sm sm:text-lg font-bold ${colors.text}`}>{day}</span>
+                  <div className="flex flex-col items-center justify-center h-full w-full">
+                    <span className={`text-sm sm:text-base md:text-lg font-bold ${colors.text}`}>{day}</span>
                     {question && (
-                      <span className={`text-xs ${categoryStyle.text} mt-1 text-center hidden sm:block`}>
+                      <span className={`text-[0.6rem] sm:text-xs ${categoryStyle.text} mt-0.5 text-center hidden sm:block`}>
                         {category}
                       </span>
                     )}
                     {isCompleted && (
-                      <span className="absolute top-0 right-0 text-xs sm:text-sm text-green-500">✓</span>
+                      <span className="absolute top-0.5 right-0.5 text-xs sm:text-sm text-green-500" aria-hidden="true">✓</span>
                     )}
                   </div>
                 </motion.div>
@@ -100,8 +102,8 @@ const QuizCalendar: React.FC<QuizCalendarProps> = ({
       <div className="flex flex-wrap gap-2 justify-center mt-4">
         {Object.entries(categoryColors).map(([category, style]) => (
           <div key={category} className="flex items-center">
-            <div className={`w-3 h-3 rounded-full ${style.bg} mr-1`}></div>
-            <span className={`text-xs ${style.text}`}>{category}</span>
+            <div className={`w-3 h-3 rounded-full ${style.bg} mr-1`} aria-hidden="true"></div>
+            <span className={`text-[0.65rem] sm:text-xs ${style.text}`}>{category}</span>
           </div>
         ))}
       </div>
@@ -123,15 +125,19 @@ const QuizCalendar: React.FC<QuizCalendarProps> = ({
       {renderCalendarGrid()}
       {renderCategoryLegend()}
       
-      <div className="mt-4 sm:mt-6 flex justify-between items-center">
+      <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-between items-center gap-2">
         <div className={`${colors.subtext} text-xs sm:text-sm`}>
           <span className="font-bold">{Object.values(progress).filter(Boolean).length}</span> / {questions.length} 完了
         </div>
-        <div className={`h-2 flex-1 mx-2 sm:mx-4 rounded-full ${colors.progressBg}`}>
-          <div 
+        <div className={`h-2 w-full flex-1 rounded-full ${colors.progressBg} overflow-hidden`}>
+          <motion.div 
             className={`h-full rounded-full ${colors.progressBar}`}
+            initial={{ width: 0 }}
+            animate={{ width: `${(Object.values(progress).filter(Boolean).length / questions.length) * 100}%` }}
+            transition={{ duration: 0.5 }}
             style={{ width: `${(Object.values(progress).filter(Boolean).length / questions.length) * 100}%` }}
-          ></div>
+            aria-label={`${Math.round((Object.values(progress).filter(Boolean).length / questions.length) * 100)}% completed`}
+          ></motion.div>
         </div>
       </div>
     </motion.div>
