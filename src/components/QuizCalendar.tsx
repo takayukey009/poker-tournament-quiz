@@ -7,9 +7,10 @@ import type { QuizQuestion } from '../supabase/quizService';
 interface QuizCalendarProps {
   questions: QuizQuestion[];
   progress: Record<number, boolean>;
-  currentDay: number;
-  onDaySelect: (day: number) => void;
-  colors: {
+  onDayClick?: (day: number) => void;
+  currentDay?: number;
+  onDaySelect?: (day: number) => void;
+  colors?: {
     bg: string;
     card: string;
     text: string;
@@ -26,9 +27,21 @@ interface QuizCalendarProps {
 const QuizCalendar: React.FC<QuizCalendarProps> = ({ 
   questions, 
   progress, 
-  currentDay, 
+  currentDay = 1, 
   onDaySelect,
-  colors
+  onDayClick,
+  colors = {
+    bg: 'bg-background',
+    card: 'bg-gray-800',
+    text: 'text-foreground',
+    subtext: 'text-gray-300',
+    button: 'bg-primary hover:bg-primary-hover',
+    cardBorder: 'border-gray-700',
+    header: 'bg-gray-800',
+    accent: 'text-accent',
+    progressBar: 'bg-primary',
+    progressBg: 'bg-gray-700'
+  }
 }) => {
   // カテゴリーごとの色を定義
   const categoryColors = {
@@ -73,7 +86,7 @@ const QuizCalendar: React.FC<QuizCalendarProps> = ({
                   `}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => onDaySelect(day)}
+                  onClick={() => onDayClick ? onDayClick(day) : onDaySelect?.(day)}
                   aria-label={`Day ${day}, Category: ${category}, ${isCompleted ? 'Completed' : 'Not completed'}`}
                 >
                   <div className="flex flex-col items-center justify-center h-full w-full">
@@ -112,13 +125,13 @@ const QuizCalendar: React.FC<QuizCalendarProps> = ({
 
   return (
     <motion.div
-      className={`p-2 sm:p-4 ${colors.card} rounded-lg shadow-md border ${colors.cardBorder}`}
+      className={`p-2 sm:p-4 ${colors?.card} rounded-lg shadow-md border ${colors?.cardBorder}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <h2 className={`text-lg sm:text-xl font-bold mb-2 sm:mb-4 ${colors.text} text-center`}>問題カレンダー</h2>
-      <p className={`mb-2 sm:mb-4 ${colors.subtext} text-center text-xs sm:text-sm`}>
+      <h2 className={`text-lg sm:text-xl font-bold mb-2 sm:mb-4 ${colors?.text} text-center`}>問題カレンダー</h2>
+      <p className={`mb-2 sm:mb-4 ${colors?.subtext} text-center text-xs sm:text-sm`}>
         日付をクリックして問題に移動できます。色は問題のカテゴリーを表します。
       </p>
       
@@ -126,12 +139,12 @@ const QuizCalendar: React.FC<QuizCalendarProps> = ({
       {renderCategoryLegend()}
       
       <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row justify-between items-center gap-2">
-        <div className={`${colors.subtext} text-xs sm:text-sm`}>
+        <div className={`${colors?.subtext} text-xs sm:text-sm`}>
           <span className="font-bold">{Object.values(progress).filter(Boolean).length}</span> / {questions.length} 完了
         </div>
-        <div className={`h-2 w-full flex-1 rounded-full ${colors.progressBg} overflow-hidden`}>
+        <div className={`h-2 w-full flex-1 rounded-full ${colors?.progressBg} overflow-hidden`}>
           <motion.div 
-            className={`h-full rounded-full ${colors.progressBar}`}
+            className={`h-full rounded-full ${colors?.progressBar}`}
             initial={{ width: 0 }}
             animate={{ width: `${(Object.values(progress).filter(Boolean).length / questions.length) * 100}%` }}
             transition={{ duration: 0.5 }}
