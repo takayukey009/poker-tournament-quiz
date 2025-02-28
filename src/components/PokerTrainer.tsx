@@ -124,8 +124,10 @@ const PokerTrainer = () => {
     setProgress(newProgress);
     if (user) {
       // ログイン済みの場合はSupabaseに保存
-      supabase.from('user_progress').upsert({ user_id: user.id, day, completed }).catch(err => {
-        console.error('Error saving progress:', err);
+      supabase.from('user_progress').upsert({ user_id: user.id, day, completed }).then(({ error }) => {
+        if (error) {
+          console.error('Error saving progress:', error);
+        }
       });
     } else {
       // 未ログインの場合はローカルストレージに保存
@@ -154,8 +156,10 @@ const PokerTrainer = () => {
             setProgress(mergedProgress);
             
             // サーバーに保存
-            supabase.from('user_progress').upsert({ user_id: currentUser.id, ...mergedProgress }).catch(err => {
-              console.error('Error saving progress:', err);
+            supabase.from('user_progress').upsert({ user_id: currentUser.id, ...mergedProgress }).then(({ error }) => {
+              if (error) {
+                console.error('Error saving progress:', error);
+              }
             });
           });
         }
