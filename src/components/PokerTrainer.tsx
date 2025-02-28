@@ -10,6 +10,7 @@ import AuthForm from './AuthForm';
 import UserProfile from './UserProfile';
 import { getCurrentUser, getUserProgress, saveUserProgress } from '../supabase/authService';
 import type { User } from '@supabase/supabase-js';
+import BackgroundPaths from './ui/BackgroundPaths';
 
 const PokerTrainer = () => {
   const [currentDay, setCurrentDay] = useState(1);
@@ -22,6 +23,7 @@ const PokerTrainer = () => {
   const [activeTab, setActiveTab] = useState<'quiz' | 'calendar' | 'stats'>('quiz');
   const [user, setUser] = useState<User | null>(null);
   const [showAuthForm, setShowAuthForm] = useState(false);
+  const [showSplashScreen, setShowSplashScreen] = useState(true);
 
   // テーマの色
   const colors = theme === 'dark' 
@@ -252,6 +254,19 @@ const PokerTrainer = () => {
       <div className={`flex flex-col min-h-screen items-center justify-center ${colors.bg}`}>
         <div className={`${colors.text} text-xl`}>読み込み中...</div>
       </div>
+    );
+  }
+
+  // スプラッシュ画面を表示
+  if (showSplashScreen) {
+    return (
+      <BackgroundPaths 
+        title="Poker Training App" 
+        onLoginClick={() => {
+          setShowSplashScreen(false);
+          setShowAuthForm(true);
+        }} 
+      />
     );
   }
 
