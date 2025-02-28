@@ -6,7 +6,7 @@ import { getAllQuizQuestions } from '../supabase/quizService';
 import type { QuizQuestion } from '../supabase/quizService';
 import QuizCalendar from './QuizCalendar';
 import StatsDashboard from './StatsDashboard';
-import { getCurrentUser, getUserProgress, saveUserProgress, signIn, signOut } from '../supabase/authService';
+import { getCurrentUser, getUserProgress, saveUserProgress, signIn } from '../supabase/authService';
 import type { User } from '@supabase/supabase-js';
 import BackgroundPaths from './ui/BackgroundPaths';
 import SplashScreen from './SplashScreen';
@@ -216,7 +216,7 @@ const PokerTrainer = () => {
             
             if (email && password) {
               signIn(email, password)
-                .then(({ data, error }) => {
+                .then(({ error }) => {
                   if (error) {
                     alert(`ログインエラー: ${error.message}`);
                   } else {
