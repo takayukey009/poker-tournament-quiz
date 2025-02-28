@@ -7,7 +7,7 @@ import { getUserProgress } from '../supabase/authService';
 import type { QuizQuestion } from '../supabase/quizService';
 import QuizCalendar from './QuizCalendar';
 import StatsDashboard from './StatsDashboard';
-import { getCurrentUser, signInWithGoogle, signOut, supabase } from '../supabase/authService';
+import { getCurrentUser, signInWithGoogle, supabase } from '../supabase/authService';
 import type { User } from '@supabase/supabase-js';
 import BackgroundPaths from './ui/BackgroundPaths';
 import SplashScreen from './SplashScreen';
