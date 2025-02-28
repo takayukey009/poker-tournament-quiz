@@ -213,7 +213,7 @@ const PokerTrainer = () => {
             // Google ログイン処理
             setIsLoading(true);
             signInWithGoogle()
-              .then(({ data, error }) => {
+              .then(({ error }) => {
                 if (error) {
                   alert(`Googleログインエラー: ${error instanceof Error ? error.message : '認証に失敗しました'}`);
                   setIsLoading(false);
