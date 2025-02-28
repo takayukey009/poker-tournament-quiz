@@ -41,11 +41,11 @@ export default function QuizCard({
       
       <div className="p-4">
         <div className="prose prose-invert max-w-none mb-6">
-          <div dangerouslySetInnerHTML={{ __html: quiz.content }} />
+          <div dangerouslySetInnerHTML={{ __html: quiz.content || quiz.question }} />
         </div>
         
         <div className="space-y-3">
-          {quiz.options.map((option, index) => {
+          {(quiz.options || []).map((option, index) => {
             // 回答後の状態に応じたスタイルを設定
             let optionStyle = "border-slate-600 hover:bg-slate-700";
             
@@ -88,7 +88,7 @@ export default function QuizCard({
             transition={{ duration: 0.3 }}
           >
             <h3 className="text-lg font-semibold mb-2">解説</h3>
-            <div dangerouslySetInnerHTML={{ __html: quiz.explanation }} />
+            <div dangerouslySetInnerHTML={{ __html: quiz.explanation || '' }} />
           </motion.div>
         )}
       </div>

@@ -7,6 +7,11 @@ export interface QuizQuestion {
   category: string;
   question: string;
   solution: string;
+  description?: string;
+  content?: string;
+  options?: string[];
+  correct_answer?: number;
+  explanation?: string;
   created_at?: string;
 }
 

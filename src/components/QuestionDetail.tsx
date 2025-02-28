@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import type { Question } from '../data/questionData';
 
 interface QuestionDetailProps {
@@ -69,10 +70,13 @@ const QuestionDetail: React.FC<QuestionDetailProps> = ({
         
         {question.image && (
           <div className="mb-4">
-            <img 
+            <Image 
               src={question.image} 
               alt="問題の図" 
+              width={800}
+              height={600}
               className="w-full rounded-md"
+              style={{ objectFit: 'contain', height: 'auto' }}
             />
           </div>
         )}
