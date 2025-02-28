@@ -218,7 +218,7 @@ const PokerTrainer = () => {
               signIn(email, password)
                 .then(({ error }) => {
                   if (error) {
-                    alert(`ログインエラー: ${error.message}`);
+                    alert(`ログインエラー: ${error instanceof Error ? error.message : '認証に失敗しました'}`);
                   } else {
                     setShowSplashScreen(false);
                     handleAuthSuccess();
