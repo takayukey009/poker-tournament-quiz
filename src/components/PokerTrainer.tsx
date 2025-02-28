@@ -56,7 +56,7 @@ const PokerTrainer = () => {
         // 進捗データの取得
         if (user) {
           // ログイン済みの場合はSupabaseから進捗を取得
-          const { progress: userProgress, error: progressError } = await getUserProgress(user.id);
+          const { data: userProgress, error: progressError } = await getUserProgress(user.id);
           if (progressError) throw progressError;
           setProgress(userProgress || {});
         } else {
@@ -102,12 +102,12 @@ const PokerTrainer = () => {
         
         // ユーザーの進捗データを取得
         if (currentUser) {
-          getUserProgress(currentUser.id).then(({ data: userProgress, error: progressError }) => {
+          getUserProgress(currentUser.id).then(({ data, error: progressError }) => {
             if (progressError) throw progressError;
             
             // ローカルの進捗データとマージ
             const localProgress = JSON.parse(localStorage.getItem('quizProgress') || '{}');
-            const mergedProgress = { ...localProgress, ...userProgress };
+            const mergedProgress = { ...localProgress, ...data };
             
             // 進捗データを更新
             setProgress(mergedProgress);

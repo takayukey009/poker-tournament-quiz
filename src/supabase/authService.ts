@@ -138,14 +138,14 @@ export const getUserProgress = async (userId: string) => {
     if (error) {
       if (error.code === 'PGRST116') {
         // レコードが見つからない場合は空のオブジェクトを返す
-        return { progress: {}, error: null };
+        return { data: {}, error: null };
       }
       throw error;
     }
     
-    return { progress: data.progress_data, error: null };
+    return { data: data.progress_data, error: null };
   } catch (error) {
     console.error('Error fetching user progress:', error);
-    return { progress: {}, error };
+    return { data: {}, error };
   }
 };
