@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { getAllQuizQuestions } from '../supabase/quizService';
-import type { QuizQuestion } from '../supabase/quizService';
+import { getAllQuizQuestions, getUserProgress } from '../supabase/dataService';
+import { getCurrentUser, signInWithGoogle, signOut, supabase } from '../supabase/authService';
+import type { QuizQuestion } from '../supabase/dataService';
 import QuizCalendar from './QuizCalendar';
 import StatsDashboard from './StatsDashboard';
-import { getCurrentUser, getUserProgress, saveUserProgress, signIn, signInWithGoogle } from '../supabase/authService';
 import type { User } from '@supabase/supabase-js';
 import BackgroundPaths from './ui/BackgroundPaths';
 import SplashScreen from './SplashScreen';
@@ -38,6 +38,46 @@ const PokerTrainer = () => {
     progressBar: 'bg-primary',
     progressBg: 'bg-gray-700'
   };
+
+  // 認証状態の変更を監視
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session);
+      if (event === 'SIGNED_IN' && session) {
+        setIsLoading(true);
+        try {
+          // ユーザー情報を設定
+          const { user: authUser } = session;
+          setUser(authUser);
+          
+          // ユーザーの進捗を取得
+          if (authUser) {
+            const { data: userProgress, error: progressError } = await getUserProgress(authUser.id);
+            if (progressError) throw progressError;
+            setProgress(userProgress || {});
+          }
+        } catch (err) {
+          console.error('Error handling sign in:', err);
+          setError('ログイン処理中にエラーが発生しました。');
+        } finally {
+          setIsLoading(false);
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        // ローカルストレージから進捗を取得
+        const savedProgress = localStorage.getItem('quizProgress');
+        if (savedProgress) {
+          setProgress(JSON.parse(savedProgress));
+        } else {
+          setProgress({});
+        }
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   // 初期データの読み込み
   useEffect(() => {
@@ -83,7 +123,7 @@ const PokerTrainer = () => {
     setProgress(newProgress);
     if (user) {
       // ログイン済みの場合はSupabaseに保存
-      saveUserProgress(user.id, newProgress).catch(err => {
+      supabase.from('user_progress').upsert({ user_id: user.id, day, completed }).catch(err => {
         console.error('Error saving progress:', err);
       });
     } else {
@@ -113,7 +153,9 @@ const PokerTrainer = () => {
             setProgress(mergedProgress);
             
             // サーバーに保存
-            saveUserProgress(currentUser.id, mergedProgress);
+            supabase.from('user_progress').upsert({ user_id: currentUser.id, ...mergedProgress }).catch(err => {
+              console.error('Error saving progress:', err);
+            });
           });
         }
       });
@@ -226,7 +268,7 @@ const PokerTrainer = () => {
             const password = prompt('パスワードを入力してください');
             
             if (email && password) {
-              signIn(email, password)
+              supabase.auth.signInWithPassword({ email, password })
                 .then(({ error }) => {
                   if (error) {
                     alert(`ログインエラー: ${error instanceof Error ? error.message : '認証に失敗しました'}`);
