@@ -6,7 +6,7 @@ import { getAllQuizQuestions } from '../supabase/quizService';
 import type { QuizQuestion } from '../supabase/quizService';
 import QuizCalendar from './QuizCalendar';
 import StatsDashboard from './StatsDashboard';
-import { getCurrentUser, getUserProgress, saveUserProgress } from '../supabase/authService';
+import { getCurrentUser, getUserProgress, saveUserProgress, signIn, signOut } from '../supabase/authService';
 import type { User } from '@supabase/supabase-js';
 import BackgroundPaths from './ui/BackgroundPaths';
 import SplashScreen from './SplashScreen';
@@ -207,9 +207,24 @@ const PokerTrainer = () => {
     return (
       <SplashScreen 
         onLoginClick={(mode) => {
-          setShowSplashScreen(false);
-          if (mode !== 'guest') {
-            handleAuthSuccess();
+          if (mode === 'guest') {
+            setShowSplashScreen(false);
+          } else {
+            // ログイン処理を実装
+            const email = prompt('メールアドレスを入力してください');
+            const password = prompt('パスワードを入力してください');
+            
+            if (email && password) {
+              signIn(email, password)
+                .then(({ data, error }) => {
+                  if (error) {
+                    alert(`ログインエラー: ${error.message}`);
+                  } else {
+                    setShowSplashScreen(false);
+                    handleAuthSuccess();
+                  }
+                });
+            }
           }
         }} 
       />
