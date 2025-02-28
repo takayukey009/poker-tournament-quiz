@@ -14,6 +14,43 @@
   --input: #f3f4f6;
   --ring: rgba(59, 130, 246, 0.5);
   --radius: 0.5rem;
+  
+  /* カード関連 */
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --card-shadow: rgba(0, 0, 0, 0.05);
+  --card-shadow-hover: rgba(0, 0, 0, 0.1);
+  
+  /* ポーカー関連の色 */
+  --spade: #1e293b;
+  --heart: #ef4444;
+  --diamond: #3b82f6;
+  --club: #10b981;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary: #9ca3af;
+  --accent: #60a5fa;
+  --muted: #6b7280;
+  --border: #374151;
+  --input: #1f2937;
+  --ring: rgba(59, 130, 246, 0.3);
+  
+  /* カード関連 */
+  --card-bg: #1f2937;
+  --card-border: #374151;
+  --card-shadow: rgba(0, 0, 0, 0.3);
+  --card-shadow-hover: rgba(0, 0, 0, 0.4);
+  
+  /* ポーカー関連の色 */
+  --spade: #cbd5e1;
+  --heart: #f87171;
+  --diamond: #60a5fa;
+  --club: #34d399;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -28,6 +65,18 @@
     --border: #374151;
     --input: #1f2937;
     --ring: rgba(59, 130, 246, 0.3);
+    
+    /* カード関連 */
+    --card-bg: #1f2937;
+    --card-border: #374151;
+    --card-shadow: rgba(0, 0, 0, 0.3);
+    --card-shadow-hover: rgba(0, 0, 0, 0.4);
+    
+    /* ポーカー関連の色 */
+    --spade: #cbd5e1;
+    --heart: #f87171;
+    --diamond: #60a5fa;
+    --club: #34d399;
   }
 }
 
@@ -60,6 +109,37 @@ body {
   }
 }
 
+/* カードスタイル */
+@layer components {
+  .card {
+    @apply bg-card-bg border border-card-border rounded-lg shadow transition-all;
+  }
+  
+  .card-hover {
+    @apply hover:shadow-lg hover:border-primary/20;
+  }
+  
+  .poker-card {
+    @apply relative rounded-lg overflow-hidden border border-card-border bg-white dark:bg-slate-800 shadow-md;
+  }
+  
+  .poker-card-spade {
+    @apply border-spade/30;
+  }
+  
+  .poker-card-heart {
+    @apply border-heart/30;
+  }
+  
+  .poker-card-diamond {
+    @apply border-diamond/30;
+  }
+  
+  .poker-card-club {
+    @apply border-club/30;
+  }
+}
+
 /* アニメーション */
 @layer utilities {
   .animate-fade-in {
@@ -70,6 +150,10 @@ body {
     animation: slideUp 0.3s ease-in-out;
   }
   
+  .animate-bounce-in {
+    animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -78,5 +162,11 @@ body {
   @keyframes slideUp {
     from { transform: translateY(10px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes bounceIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    70% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
   }
 }

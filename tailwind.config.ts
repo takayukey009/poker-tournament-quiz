@@ -22,6 +22,14 @@ export default {
         muted: "var(--muted)",
         border: "var(--border)",
         input: "var(--input)",
+        "card-bg": "var(--card-bg)",
+        "card-border": "var(--card-border)",
+        "card-shadow": "var(--card-shadow)",
+        "card-shadow-hover": "var(--card-shadow-hover)",
+        spade: "var(--spade)",
+        heart: "var(--heart)",
+        diamond: "var(--diamond)",
+        club: "var(--club)",
       },
       borderRadius: {
         DEFAULT: "var(--radius)",
@@ -34,8 +42,8 @@ export default {
         mono: ["var(--font-geist-mono)"],
       },
       boxShadow: {
-        card: "0 2px 8px rgba(0, 0, 0, 0.08)",
-        "card-hover": "0 4px 12px rgba(0, 0, 0, 0.12)",
+        card: "0 2px 8px var(--card-shadow)",
+        "card-hover": "0 4px 12px var(--card-shadow-hover)",
       },
       minHeight: {
         '10': '2.5rem',

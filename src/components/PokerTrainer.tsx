@@ -11,6 +11,11 @@ import UserProfile from './UserProfile';
 import { getCurrentUser, getUserProgress, saveUserProgress } from '../supabase/authService';
 import type { User } from '@supabase/supabase-js';
 import BackgroundPaths from './ui/BackgroundPaths';
+import SplashScreen from './SplashScreen';
+import QuizCard from './QuizCard';
+import Navbar from './Navbar';
+import PageTransition from './PageTransition';
+import { ThemeProvider, useTheme } from '../ThemeProvider';
 
 const PokerTrainer = () => {
   const [currentDay, setCurrentDay] = useState(1);
@@ -252,256 +257,193 @@ const PokerTrainer = () => {
   // スプラッシュ画面を表示（ローディングよりも先にチェック）
   if (showSplashScreen) {
     return (
-      <BackgroundPaths 
-        title="Poker Training App" 
-        onLoginClick={() => {
+      <SplashScreen 
+        onLoginClick={(mode) => {
           setShowSplashScreen(false);
-          setShowAuthForm(true);
+          if (mode !== 'guest') {
+            setShowAuthForm(true);
+          }
         }} 
       />
     );
   }
 
+  // ローディング画面
   if (isLoading) {
     return (
-      <div className={`flex flex-col min-h-screen items-center justify-center ${colors.bg}`}>
-        <div className={`${colors.text} text-xl`}>読み込み中...</div>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mb-4"
+        />
+        <p className="text-lg">読み込み中...</p>
+      </div>
+    );
+  }
+
+  // エラー画面
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white p-4">
+        <div className="bg-red-900/50 border border-red-700 rounded-lg p-4 max-w-md text-center">
+          <h2 className="text-xl font-bold mb-2">エラーが発生しました</h2>
+          <p className="mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-md transition-colors"
+          >
+            再読み込み
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className={`flex flex-col min-h-screen ${colors.bg}`}>
-      {/* ヘッダー */}
-      <motion.header 
-        className={`sticky top-0 z-10 flex justify-between items-center p-4 ${colors.header} shadow-md`}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h1 className={`text-xl font-bold ${colors.text}`}>テキサスホールデム問題集</h1>
-        <div className="flex items-center space-x-3">
-          <div className={`hidden sm:flex text-sm ${colors.subtext} items-center`}>
-            <div className="w-20 mr-2">進捗:</div>
-            <div className="w-24 bg-gray-700 rounded-full h-2.5">
-              <div className="bg-primary h-2.5 rounded-full" style={{ width: `${calculateProgress()}%` }}></div>
-            </div>
-            <span className="ml-2">{calculateProgress()}%</span>
-          </div>
-          <button 
-            onClick={toggleTheme} 
-            className={`p-2 rounded-full hover:bg-opacity-20 hover:bg-gray-500 ${colors.text} transition-colors`}
-            aria-label={theme === 'dark' ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
-          >
-            {theme === 'dark' ? '☀️' : '🌙'}
-          </button>
-          {user ? (
-            <UserProfile 
-              user={user} 
-              onSignOut={handleSignOut} 
-              colors={colors} 
-            />
-          ) : (
-            <motion.button
-              onClick={() => setShowAuthForm(true)}
-              className={`ml-2 px-4 py-2 text-sm rounded-md ${colors.button} ${colors.text} shadow-sm`}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              ログイン
-            </motion.button>
-          )}
-        </div>
-      </motion.header>
-
-      {/* 進捗バー (モバイル用) */}
-      <div className="sm:hidden">
-        <div className={`flex items-center px-4 py-2 ${colors.subtext}`}>
-          <div className="w-16 mr-2">進捗:</div>
-          <div className="flex-1 bg-gray-700 rounded-full h-2.5">
-            <div className="bg-primary h-2.5 rounded-full" style={{ width: `${calculateProgress()}%` }}></div>
-          </div>
-          <span className="ml-2 w-12 text-right">{calculateProgress()}%</span>
-        </div>
-      </div>
-
-      {/* タブナビゲーション */}
-      <div className={`flex justify-center p-2 ${colors.header} border-b ${colors.cardBorder} sticky top-[73px] z-10`}>
-        <nav className="flex flex-wrap justify-center space-x-2">
-          <button
-            onClick={() => setActiveTab('quiz')}
-            className={`px-4 py-2 rounded-md transition-colors ${
-              activeTab === 'quiz' 
-                ? `${colors.button} ${colors.text} shadow-sm` 
-                : `${colors.text} hover:bg-gray-700 hover:bg-opacity-30`
-            }`}
-          >
-            問題
-          </button>
-          <button
-            onClick={() => setActiveTab('calendar')}
-            className={`px-4 py-2 rounded-md transition-colors ${
-              activeTab === 'calendar' 
-                ? `${colors.button} ${colors.text} shadow-sm` 
-                : `${colors.text} hover:bg-gray-700 hover:bg-opacity-30`
-            }`}
-          >
-            カレンダー
-          </button>
-          <button
-            onClick={() => setActiveTab('stats')}
-            className={`px-4 py-2 rounded-md transition-colors ${
-              activeTab === 'stats' 
-                ? `${colors.button} ${colors.text} shadow-sm` 
-                : `${colors.text} hover:bg-gray-700 hover:bg-opacity-30`
-            }`}
-          >
-            統計
-          </button>
-        </nav>
-      </div>
-
-      {/* メインコンテンツ */}
-      <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-4xl mx-auto w-full overflow-x-hidden">
-        {error && (
-          <div className="mb-6 p-4 bg-red-500 bg-opacity-20 text-red-700 rounded-md border border-red-300">
-            <div className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-              </svg>
-              {error}
-            </div>
-          </div>
-        )}
-        
-        {activeTab === 'quiz' && (
-          <motion.div 
-            className={`mb-6 p-5 sm:p-6 md:p-8 ${colors.card} rounded-lg shadow-card hover:shadow-card-hover border ${colors.cardBorder} transition-shadow`}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-3">
-              <div className="flex items-center">
-                <span className={`inline-flex items-center justify-center h-10 w-10 rounded-full ${colors.button} ${colors.text} mr-3 font-bold text-lg`}>
-                  {currentDay}
-                </span>
-                <h2 className={`text-lg font-bold ${colors.text}`}>Day {selectedDay.day}</h2>
-              </div>
-              <span className={`px-4 py-1.5 text-sm font-medium rounded-full ${categoryStyle.bg} ${categoryStyle.text} self-start sm:self-auto`}>
-                {categoryStyle.label}
-              </span>
-            </div>
-            <h3 className={`text-xl sm:text-2xl font-bold mb-4 ${colors.accent}`}>{selectedDay.title}</h3>
-            <div className={`mb-6 whitespace-pre-line ${colors.text} leading-relaxed text-base sm:text-lg`}>
-              {selectedDay.question}
-            </div>
-            <motion.button
-              onClick={() => {
-                setShowAnswer(!showAnswer);
-                if (!showAnswer) {
-                  saveProgress(selectedDay.day, true);
-                }
-              }}
-              className={`w-full py-4 mb-6 rounded-md font-bold text-lg ${colors.button} ${colors.text} transition-colors shadow-sm`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {showAnswer ? "問題を隠す" : "解答を見る"}
-            </motion.button>
-            
-            {showAnswer && (
-              <motion.div 
-                className={`p-5 rounded-md bg-opacity-10 bg-blue-500 ${colors.subtext} whitespace-pre-line leading-relaxed text-base`}
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                transition={{ duration: 0.3 }}
-              >
-                {selectedDay.solution}
-              </motion.div>
-            )}
-          </motion.div>
-        )}
-        {activeTab === 'calendar' && (
-          <QuizCalendar 
-            questions={questions}
-            progress={progress}
-            currentDay={currentDay}
-            onDaySelect={(day) => {
-              setCurrentDay(day);
-              setActiveTab('quiz');
-              setShowAnswer(false);
-            }}
-            colors={colors}
+      {showSplashScreen ? (
+        <SplashScreen 
+          onLoginClick={(mode) => {
+            setShowSplashScreen(false);
+            if (mode !== 'guest') {
+              setShowAuthForm(true);
+            }
+          }} 
+        />
+      ) : (
+        <>
+          <Navbar 
+            user={user} 
+            activeTab={activeTab} 
+            onTabChange={(tab) => setActiveTab(tab as 'quiz' | 'calendar' | 'stats')}
           />
-        )}
-        {activeTab === 'stats' && (
-          <StatsDashboard 
-            questions={questions}
-            progress={progress}
-            colors={colors}
-          />
-        )}
-        
-        {/* ナビゲーションボタン */}
-        {activeTab === 'quiz' && (
-          <div className="flex justify-between mt-6">
-            <motion.button
-              onClick={goToPreviousDay}
-              disabled={currentDay <= 1}
-              className={`flex items-center px-4 py-3 rounded-md ${currentDay <= 1 ? 'opacity-50 cursor-not-allowed' : ''} ${colors.text} hover:bg-gray-700 hover:bg-opacity-10 transition-colors`}
-              whileHover={currentDay > 1 ? { scale: 1.05 } : {}}
-              whileTap={currentDay > 1 ? { scale: 0.95 } : {}}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              前の問題
-            </motion.button>
-            <motion.button
-              onClick={goToNextDay}
-              disabled={currentDay >= questions.length}
-              className={`flex items-center px-4 py-3 rounded-md ${currentDay >= questions.length ? 'opacity-50 cursor-not-allowed' : ''} ${colors.text} hover:bg-gray-700 hover:bg-opacity-10 transition-colors`}
-              whileHover={currentDay < questions.length ? { scale: 1.05 } : {}}
-              whileTap={currentDay < questions.length ? { scale: 0.95 } : {}}
-            >
-              次の問題
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-              </svg>
-            </motion.button>
-          </div>
-        )}
-      </main>
-
-      {/* 認証フォームモーダル */}
-      {showAuthForm && (
-        <motion.div
-          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setShowAuthForm(false)}
-        >
-          <motion.div
-            className="w-full max-w-md"
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <AuthForm onSuccess={handleAuthSuccess} colors={colors} />
-          </motion.div>
-        </motion.div>
+          
+          <main className="flex-grow p-4 sm:p-6">
+            <PageTransition>
+              {activeTab === 'quiz' && (
+                <div className="max-w-4xl mx-auto">
+                  <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <h1 className="text-2xl font-bold text-white mb-4 sm:mb-0">
+                      ポーカートーナメントクイズ
+                    </h1>
+                    
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={goToPreviousDay}
+                        disabled={currentDay <= 1}
+                        className={`px-3 py-2 rounded-md ${
+                          currentDay <= 1 
+                            ? 'bg-slate-700 text-slate-500 cursor-not-allowed' 
+                            : 'bg-slate-700 hover:bg-slate-600 text-white'
+                        }`}
+                      >
+                        前の日
+                      </button>
+                      <div className="px-3 py-2 bg-slate-800 rounded-md text-white">
+                        Day {currentDay}
+                      </div>
+                      <button
+                        onClick={goToNextDay}
+                        disabled={currentDay >= questions.length}
+                        className={`px-3 py-2 rounded-md ${
+                          currentDay >= questions.length 
+                            ? 'bg-slate-700 text-slate-500 cursor-not-allowed' 
+                            : 'bg-slate-700 hover:bg-slate-600 text-white'
+                        }`}
+                      >
+                        次の日
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {selectedDay ? (
+                    <motion.div 
+                      className={`mb-6 p-5 sm:p-6 md:p-8 ${colors.card} rounded-lg shadow-card hover:shadow-card-hover border ${colors.cardBorder} transition-shadow`}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-3">
+                        <div className="flex items-center">
+                          <span className={`inline-flex items-center justify-center h-10 w-10 rounded-full ${colors.button} ${colors.text} mr-3 font-bold text-lg`}>
+                            {selectedDay.day}
+                          </span>
+                          <h2 className={`text-lg font-bold ${colors.text}`}>Day {selectedDay.day}</h2>
+                        </div>
+                        <span className={`px-4 py-1.5 text-sm font-medium rounded-full ${categoryStyle.bg} ${categoryStyle.text} self-start sm:self-auto`}>
+                          {categoryStyle.label}
+                        </span>
+                      </div>
+                      <h3 className={`text-xl sm:text-2xl font-bold mb-4 ${colors.accent}`}>{selectedDay.title}</h3>
+                      <div className={`mb-6 whitespace-pre-line ${colors.text} leading-relaxed text-base sm:text-lg`}>
+                        {selectedDay.question}
+                      </div>
+                      <motion.button
+                        onClick={() => {
+                          setShowAnswer(!showAnswer);
+                          if (!showAnswer) {
+                            saveProgress(selectedDay.day, true);
+                          }
+                        }}
+                        className={`w-full py-4 mb-6 rounded-md font-bold text-lg ${colors.button} ${colors.text} transition-colors shadow-sm`}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        {showAnswer ? "問題を隠す" : "解答を見る"}
+                      </motion.button>
+                      
+                      {showAnswer && (
+                        <motion.div 
+                          className={`p-5 rounded-md bg-opacity-10 bg-blue-500 ${colors.subtext} whitespace-pre-line leading-relaxed text-base`}
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {selectedDay.solution}
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  ) : (
+                    <div className="bg-slate-800 border border-slate-700 rounded-lg p-6 text-center text-white">
+                      <p>この日のクイズはありません。</p>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {activeTab === 'calendar' && (
+                <div className="max-w-4xl mx-auto">
+                  <h1 className="text-2xl font-bold text-white mb-6">学習カレンダー</h1>
+                  <QuizCalendar 
+                    questions={questions} 
+                    progress={progress} 
+                    onDayClick={(day) => {
+                      setCurrentDay(day);
+                      setActiveTab('quiz');
+                    }} 
+                  />
+                </div>
+              )}
+              
+              {activeTab === 'stats' && (
+                <div className="max-w-4xl mx-auto">
+                  <h1 className="text-2xl font-bold text-white mb-6">学習統計</h1>
+                  <StatsDashboard 
+                    questions={questions} 
+                    progress={progress} 
+                  />
+                </div>
+              )}
+            </PageTransition>
+          </main>
+          
+          <footer className="bg-slate-900 border-t border-slate-800 py-4 px-6 text-center text-slate-400 text-sm">
+            <p> 2024</p>
+          </footer>
+        </>
       )}
-      
-      {/* フッター */}
-      <footer className={`p-6 text-center ${colors.subtext} text-sm border-t ${colors.cardBorder}`}>
-        <div className="max-w-4xl mx-auto">
-          <p className="mb-2">テキサスホールデムトーナメント問題集 2025</p>
-          <p className="text-xs">毎日のポーカートーナメント戦略学習プラットフォーム</p>
-        </div>
-      </footer>
+      <BackgroundPaths />
     </div>
   );
 };
