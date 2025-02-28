@@ -7,7 +7,7 @@ import type { QuizQuestion } from '../supabase/quizService';
 interface StatsDashboardProps {
   questions: QuizQuestion[];
   progress: Record<number, boolean>;
-  colors: {
+  colors?: {
     bg: string;
     card: string;
     text: string;
@@ -21,7 +21,22 @@ interface StatsDashboardProps {
   };
 }
 
-const StatsDashboard: React.FC<StatsDashboardProps> = ({ questions, progress, colors }) => {
+const StatsDashboard: React.FC<StatsDashboardProps> = ({ 
+  questions, 
+  progress,
+  colors = {
+    bg: 'bg-background',
+    card: 'bg-gray-800',
+    text: 'text-foreground',
+    subtext: 'text-gray-300',
+    accent: 'text-accent',
+    button: 'bg-primary hover:bg-primary-hover',
+    cardBorder: 'border-gray-700',
+    header: 'bg-gray-800',
+    progressBar: 'bg-primary',
+    progressBg: 'bg-gray-700'
+  }
+}) => {
   // カテゴリー別の統計を計算
   const calculateCategoryStats = () => {
     const categories: Record<string, { total: number; completed: number }> = {};
@@ -69,23 +84,23 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ questions, progress, co
   }, [categoryStats]);
   
   return (
-    <motion.div
-      className={`p-2 sm:p-4 ${colors.card} rounded-lg shadow-md border ${colors.cardBorder}`}
+    <motion.div 
+      className={`p-6 ${colors?.card} rounded-lg shadow-md border ${colors?.cardBorder}`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <h2 className={`text-lg sm:text-xl font-bold mb-2 sm:mb-4 ${colors.text} text-center`}>学習進捗</h2>
+      <h2 className={`text-lg sm:text-xl font-bold mb-2 sm:mb-4 ${colors?.text} text-center`}>学習進捗</h2>
       
       {/* 全体の進捗 */}
       <div className="mb-4 sm:mb-6">
         <div className="flex justify-between items-center mb-2">
-          <span className={`font-bold ${colors.text} text-sm sm:text-base`}>全体の進捗</span>
-          <span className={`${colors.subtext} text-xs sm:text-sm`}>{totalCompleted} / {totalQuestions} ({completionPercentage}%)</span>
+          <span className={`font-bold ${colors?.text} text-sm sm:text-base`}>全体の進捗</span>
+          <span className={`${colors?.subtext} text-xs sm:text-sm`}>{totalCompleted} / {totalQuestions} ({completionPercentage}%)</span>
         </div>
-        <div className={`h-3 sm:h-4 w-full rounded-full ${colors.progressBg} overflow-hidden`}>
+        <div className={`h-3 sm:h-4 w-full rounded-full ${colors?.progressBg} overflow-hidden`}>
           <motion.div 
-            className={`h-full rounded-full ${colors.progressBar}`}
+            className={`h-full rounded-full ${colors?.progressBar}`}
             initial={{ width: 0 }}
             animate={{ width: `${completionPercentage}%` }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -95,7 +110,7 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ questions, progress, co
       </div>
       
       {/* カテゴリー別の進捗 */}
-      <h3 className={`text-base sm:text-lg font-bold mb-2 sm:mb-3 ${colors.text}`}>カテゴリー別の進捗</h3>
+      <h3 className={`text-base sm:text-lg font-bold mb-2 sm:mb-3 ${colors?.text}`}>カテゴリー別の進捗</h3>
       <div className="space-y-3 sm:space-y-4">
         {sortedCategories.map(([category, stats]) => {
           const categoryPercentage = stats.total > 0 
@@ -108,9 +123,9 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ questions, progress, co
             <div key={category} className="mb-2 sm:mb-3">
               <div className="flex justify-between items-center mb-1">
                 <span className={`font-medium ${categoryColor.text} text-xs sm:text-sm`}>{category}</span>
-                <span className={`${colors.subtext} text-xs`}>{stats.completed} / {stats.total} ({categoryPercentage}%)</span>
+                <span className={`${colors?.subtext} text-xs`}>{stats.completed} / {stats.total} ({categoryPercentage}%)</span>
               </div>
-              <div className={`h-2 sm:h-3 w-full rounded-full ${colors.progressBg} overflow-hidden`}>
+              <div className={`h-2 sm:h-3 w-full rounded-full ${colors?.progressBg} overflow-hidden`}>
                 <motion.div 
                   className={`h-full rounded-full ${categoryColor.bg}`}
                   initial={{ width: 0 }}
@@ -126,12 +141,12 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({ questions, progress, co
       
       {/* 学習のヒント */}
       <motion.div 
-        className={`mt-4 sm:mt-6 p-2 sm:p-3 rounded-md bg-opacity-10 bg-blue-500 ${colors.subtext}`}
+        className={`mt-4 sm:mt-6 p-2 sm:p-3 rounded-md bg-opacity-10 bg-blue-500 ${colors?.subtext}`}
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.5 }}
       >
-        <h3 className={`text-sm sm:text-md font-bold mb-1 sm:mb-2 ${colors.accent}`}>学習のヒント</h3>
+        <h3 className={`text-sm sm:text-md font-bold mb-1 sm:mb-2 ${colors?.accent}`}>学習のヒント</h3>
         <ul className="list-disc list-inside space-y-1 text-xs sm:text-sm">
           <li>毎日1問ずつ解くことで、継続的に学習を進めましょう</li>
           <li>苦手なカテゴリーを重点的に復習することで効率的に上達できます</li>
