@@ -9,7 +9,6 @@ interface QuizCardProps {
   onAnswerClick: (index: number) => void;
   selectedAnswer?: number | null;
   showAnswer?: boolean;
-  isCorrect?: boolean;
 }
 
 export default function QuizCard({ 
@@ -17,7 +16,6 @@ export default function QuizCard({
   onAnswerClick, 
   selectedAnswer = null, 
   showAnswer = false,
-  isCorrect = false
 }: QuizCardProps) {
   return (
     <motion.div
