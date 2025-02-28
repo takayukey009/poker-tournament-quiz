@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { getAllQuizQuestions, getUserProgress } from '../supabase/dataService';
-import { getCurrentUser, signInWithGoogle, signOut, supabase } from '../supabase/authService';
-import type { QuizQuestion } from '../supabase/dataService';
+import { getAllQuizQuestions } from '../supabase/quizService';
+import { getUserProgress } from '../supabase/authService';
+import type { QuizQuestion } from '../supabase/quizService';
 import QuizCalendar from './QuizCalendar';
 import StatsDashboard from './StatsDashboard';
+import { getCurrentUser, signInWithGoogle, signOut, supabase } from '../supabase/authService';
 import type { User } from '@supabase/supabase-js';
 import BackgroundPaths from './ui/BackgroundPaths';
 import SplashScreen from './SplashScreen';
