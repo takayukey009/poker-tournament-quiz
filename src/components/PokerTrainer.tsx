@@ -187,6 +187,39 @@ const PokerTrainer = () => {
     }
   };
 
+  const handleLogin = (mode: 'guest' | 'google') => {
+    if (mode === 'guest') {
+      setShowSplashScreen(false);
+    } else if (mode === 'google') {
+      // Google ログイン処理
+      setIsLoading(true);
+      signInWithGoogle()
+        .then(({ error }) => {
+          if (error) {
+            alert(`Googleログインエラー: ${error instanceof Error ? error.message : '認証に失敗しました'}`);
+            setIsLoading(false);
+          }
+          // リダイレクト後に自動的にハンドリングされるので、ここでは何もしない
+        });
+    } else {
+      // メールログイン処理
+      const email = prompt('メールアドレスを入力してください');
+      const password = prompt('パスワードを入力してください');
+      
+      if (email && password) {
+        supabase.auth.signInWithPassword({ email, password })
+          .then(({ error }) => {
+            if (error) {
+              alert(`ログインエラー: ${error instanceof Error ? error.message : '認証に失敗しました'}`);
+            } else {
+              setShowSplashScreen(false);
+              handleAuthSuccess();
+            }
+          });
+      }
+    }
+  };
+
   const goToPreviousDay = () => {
     if (currentDay > 1) {
       setCurrentDay(currentDay - 1);
@@ -271,38 +304,8 @@ const PokerTrainer = () => {
   if (showSplashScreen && !user) {
     return (
       <SplashScreen 
-        onLoginClick={(mode) => {
-          if (mode === 'guest') {
-            setShowSplashScreen(false);
-          } else if (mode === 'google') {
-            // Google ログイン処理
-            setIsLoading(true);
-            signInWithGoogle()
-              .then(({ error }) => {
-                if (error) {
-                  alert(`Googleログインエラー: ${error instanceof Error ? error.message : '認証に失敗しました'}`);
-                  setIsLoading(false);
-                }
-                // リダイレクト後に自動的にハンドリングされるので、ここでは何もしない
-              });
-          } else {
-            // メールログイン処理
-            const email = prompt('メールアドレスを入力してください');
-            const password = prompt('パスワードを入力してください');
-            
-            if (email && password) {
-              supabase.auth.signInWithPassword({ email, password })
-                .then(({ error }) => {
-                  if (error) {
-                    alert(`ログインエラー: ${error instanceof Error ? error.message : '認証に失敗しました'}`);
-                  } else {
-                    setShowSplashScreen(false);
-                    handleAuthSuccess();
-                  }
-                });
-            }
-          }
-        }} 
+        onLoginClick={handleLogin} 
+        signInWithGoogle={signInWithGoogle}
       />
     );
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from "framer-motion";
 
 function FloatingPaths({ position }: { position: number }) {
@@ -48,11 +48,31 @@ function FloatingPaths({ position }: { position: number }) {
 
 interface SplashScreenProps {
   onLoginClick: (mode?: 'guest' | 'google') => void;
+  signInWithGoogle: () => Promise<{ error?: any }>;
 }
 
-export default function SplashScreen({ onLoginClick }: SplashScreenProps) {
+export default function SplashScreen({ onLoginClick, signInWithGoogle }: SplashScreenProps) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const title = "Poker Training App";
   const words = title.split(" ");
+
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      const { error } = await signInWithGoogle();
+      if (error) {
+        console.error('Google login error:', error);
+        setError('Googleログインに失敗しました。もう一度お試しください。');
+      }
+    } catch (error) {
+      console.error('Google login error:', error);
+      setError('Googleログインに失敗しました。もう一度お試しください。');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-white dark:bg-neutral-950">
@@ -123,7 +143,7 @@ export default function SplashScreen({ onLoginClick }: SplashScreenProps) {
                         overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
             >
               <button
-                onClick={() => onLoginClick('google')}
+                onClick={handleGoogleLogin}
                 className="rounded-[1.15rem] px-8 py-6 text-lg font-semibold backdrop-blur-md 
                               bg-white/95 hover:bg-white/100 dark:bg-black/95 dark:hover:bg-black/100 
                               text-black dark:text-white transition-all duration-300 
@@ -149,6 +169,9 @@ export default function SplashScreen({ onLoginClick }: SplashScreenProps) {
               Continue as guest
             </button>
           </div>
+          {error && (
+            <div className="mt-4 text-red-500">{error}</div>
+          )}
         </motion.div>
       </div>
     </div>
