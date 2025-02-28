@@ -57,6 +57,9 @@ const PokerTrainer = () => {
             if (progressError) throw progressError;
             setProgress(userProgress || {});
           }
+          
+          // スプラッシュ画面を非表示にする
+          setShowSplashScreen(false);
         } catch (err) {
           console.error('Error handling sign in:', err);
           setError('ログイン処理中にエラーが発生しました。');
@@ -93,6 +96,11 @@ const PokerTrainer = () => {
         const { user, error: userError } = await getCurrentUser();
         if (userError) throw userError;
         setUser(user);
+        
+        // ユーザーがログインしている場合はスプラッシュ画面を非表示にする
+        if (user) {
+          setShowSplashScreen(false);
+        }
         
         // 進捗データの取得
         if (user) {
@@ -250,7 +258,7 @@ const PokerTrainer = () => {
   const categoryStyle = getCategoryStyle(selectedDay?.category || 'トーナメント基礎');
 
   // スプラッシュ画面を表示（ローディングよりも先にチェック）
-  if (showSplashScreen) {
+  if (showSplashScreen && !user) {
     return (
       <SplashScreen 
         onLoginClick={(mode) => {
