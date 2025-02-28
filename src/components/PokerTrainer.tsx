@@ -249,15 +249,7 @@ const PokerTrainer = () => {
   const selectedDay = questions.find(q => q.day === currentDay) || questions[0] || localQuestions[0];
   const categoryStyle = getCategoryStyle(selectedDay?.category || 'early');
 
-  if (isLoading) {
-    return (
-      <div className={`flex flex-col min-h-screen items-center justify-center ${colors.bg}`}>
-        <div className={`${colors.text} text-xl`}>読み込み中...</div>
-      </div>
-    );
-  }
-
-  // スプラッシュ画面を表示
+  // スプラッシュ画面を表示（ローディングよりも先にチェック）
   if (showSplashScreen) {
     return (
       <BackgroundPaths 
@@ -267,6 +259,14 @@ const PokerTrainer = () => {
           setShowAuthForm(true);
         }} 
       />
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className={`flex flex-col min-h-screen items-center justify-center ${colors.bg}`}>
+        <div className={`${colors.text} text-xl`}>読み込み中...</div>
+      </div>
     );
   }
 
