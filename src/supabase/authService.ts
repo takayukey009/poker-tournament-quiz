@@ -38,6 +38,24 @@ export const signIn = async (email: string, password: string) => {
   }
 };
 
+// Googleでログイン
+export const signInWithGoogle = async () => {
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
+      },
+    });
+    
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('Error signing in with Google:', error);
+    return { data: null, error };
+  }
+};
+
 // ログアウト
 export const signOut = async () => {
   try {

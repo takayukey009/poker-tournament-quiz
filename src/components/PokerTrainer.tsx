@@ -6,7 +6,7 @@ import { getAllQuizQuestions } from '../supabase/quizService';
 import type { QuizQuestion } from '../supabase/quizService';
 import QuizCalendar from './QuizCalendar';
 import StatsDashboard from './StatsDashboard';
-import { getCurrentUser, getUserProgress, saveUserProgress, signIn } from '../supabase/authService';
+import { getCurrentUser, getUserProgress, saveUserProgress, signIn, signInWithGoogle } from '../supabase/authService';
 import type { User } from '@supabase/supabase-js';
 import BackgroundPaths from './ui/BackgroundPaths';
 import SplashScreen from './SplashScreen';
@@ -209,8 +209,19 @@ const PokerTrainer = () => {
         onLoginClick={(mode) => {
           if (mode === 'guest') {
             setShowSplashScreen(false);
+          } else if (mode === 'google') {
+            // Google ログイン処理
+            setIsLoading(true);
+            signInWithGoogle()
+              .then(({ data, error }) => {
+                if (error) {
+                  alert(`Googleログインエラー: ${error instanceof Error ? error.message : '認証に失敗しました'}`);
+                  setIsLoading(false);
+                }
+                // リダイレクト後に自動的にハンドリングされるので、ここでは何もしない
+              });
           } else {
-            // ログイン処理を実装
+            // メールログイン処理
             const email = prompt('メールアドレスを入力してください');
             const password = prompt('パスワードを入力してください');
             
