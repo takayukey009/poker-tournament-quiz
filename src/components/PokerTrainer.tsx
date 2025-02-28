@@ -42,6 +42,16 @@ const PokerTrainer = () => {
 
   // 認証状態の変更を監視
   useEffect(() => {
+    // ページロード時にURLからセッション情報を取得
+    const handleRedirectResult = async () => {
+      const { error } = await supabase.auth.getSession();
+      if (error) {
+        console.error('Error getting session:', error);
+      }
+    };
+    
+    handleRedirectResult();
+    
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session);
       if (event === 'SIGNED_IN' && session) {

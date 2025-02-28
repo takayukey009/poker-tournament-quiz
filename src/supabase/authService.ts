@@ -4,7 +4,14 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storageKey: 'poker-tournament-quiz-auth',
+  }
+});
 
 // ユーザー登録
 export const signUp = async (email: string, password: string) => {
@@ -49,6 +56,7 @@ export const signInWithGoogle = async () => {
           access_type: 'offline',
           prompt: 'consent',
         },
+        skipBrowserRedirect: false,
       },
     });
     
